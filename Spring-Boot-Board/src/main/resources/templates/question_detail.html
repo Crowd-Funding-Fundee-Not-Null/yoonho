@@ -10,12 +10,48 @@
 
 <div class="card my-3">
 	<div class="card-body">
-		<div class="card-text" style="white-space: pre-line;" th:text="${question.content}"></div>
-		<div class="d-flex justify-content-end">
+		<div class="card-text" th:utext="${@commonUtil.markdown(question.content)}"></div>
+		
+		<div class="d-flex justify-content-end" style="display: inline-block !important; float: right;">
+		
+			<!-- 수정 시간 -->
+			<div th:if="${question.modifyDate!=null}"  
+				class="badge bg-light text-dark p-2 text-start mx-3">
+				<div class="mb-2">수정일 : </div>
+				<div th:text="${#temporals.format(question.modifyDate,'yyyy-MM-dd HH:mm')}"></div>
+			</div>
+		
+			<!-- 입력 시간 -->
 			<div class="badge bg-light text-dark p-2 text-start">
+				<div class="mb-2">
+					<span th:if="${question.author!=null}" th:text="${question.author.userName}"></span>
+				</div>
 				<div th:text="${#temporals.format(question.createdDate,'yyyy-MM-dd HH:mm')}"></div>
 			</div>
 		</div>
+		
+		<div class="my-3" style="display: inline-block; margin: 15px 0 0 0 !important;">
+		
+			<a href="javascript:void(0);" class="recommend btn btn-sm btn-outline-secondary"
+				th:data-uri="@{|/question/vote/${question.id}|}">
+				추천
+				<span class="badge rounded-pill bg-success" th:text="${#lists.size(question.voter)}">
+				</span>
+			</a>
+		
+		
+			<a th:href="@{|/question/modify/${question.id}|}" 
+				class="btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()"
+				th:if="${question.author!=null and #authentication.getPrincipal().getUsername()==
+				question.author.userName}" th:text="수정"></a>
+				
+			<a href="javascript:void(0);" th:data-uri="@{|/question/delete/${question.id}|}" 
+				class="delete btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()"
+				th:if="${question.author!=null and #authentication.getPrincipal().getUsername()==
+				question.author.userName}" th:text="삭제"></a>	
+			
+		</div>
+		
 	</div>
 </div>
 
@@ -24,13 +60,49 @@
 
 
 <div class="card my-3" th:each="answer : ${question.answerList}">
+
+	<a th:id="|answer_${answer.id}|"></a>
+
+
 	<div class="card-body">
-		<div class="card-text" style="white-space: pre-line;" th:text="${answer.content}"></div>
-		<div class="d-flex justify-content-end">
+		<div class="card-text" th:utext="${@commonUtil.markdown(answer.content)}"></div>
+		<div class="d-flex justify-content-end" style="display: inline-block !important; float: right;">
+			
+			<div th:if="${answer.modifyDate!=null}"  
+				class="badge bg-light text-dark p-2 text-start mx-3">
+				<div class="mb-2">수정일 : </div>
+				<div th:text="${#temporals.format(answer.modifyDate,'yyyy-MM-dd HH:mm')}"></div>
+			</div>
+			
 			<div class="badge bg-light text-dark p-2 text-start">
+				<div class="mb-2">
+					<span th:if="${answer.author!=null}" th:text="${answer.author.userName}"></span>
+				</div>
 				<div th:text="${#temporals.format(answer.createdDate,'yyyy-MM-dd HH:mm')}"></div>
 			</div>
+			
 		</div>
+		
+		<div class="my-3" style="display: inline-block; margin: 15px 0 0 0 !important;">
+		
+			<a href="javascript:void(0);" class="recommend btn btn-sm btn-outline-secondary"
+				th:data-uri="@{|/answer/vote/${answer.id}|}">
+				추천
+				<span class="badge rounded-pill bg-success" th:text="${#lists.size(answer.voter)}">
+				</span>
+			</a>
+		
+			<a th:href="@{|/answer/modify/${answer.id}|}" sec:authorize="isAuthenticated()"
+				class="btn btn-sm btn-outline-secondary"
+				th:if="${answer.author!=null and #authentication.getPrincipal().getUsername()==
+				answer.author.userName}" th:text="수정"></a>
+			<a href="javascript:void(0);" th:data-uri="@{|/answer/delete/${answer.id}|}" 
+				class="delete btn btn-sm btn-outline-secondary" sec:authorize="isAuthenticated()"
+				th:if="${answer.author!=null and #authentication.getPrincipal().getUsername()==
+				answer.author.userName}" th:text="삭제"></a>	
+				
+		</div>
+		
 	</div>
 </div>
 
@@ -42,8 +114,10 @@
 
 <div th:replace="form_errors :: formErrorsFragment"></div>
 
-<textarea rows="15" cols="30" th:field="*{content}" id="content" class="form-control"></textarea>
-
+<textarea rows="7" cols="30" th:field="*{content}" id="content" class="form-control"
+	sec:authorize="isAnonymous()" disabled="disabled"></textarea>
+<textarea rows="7" cols="30" th:field="*{content}" id="content" class="form-control"
+	sec:authorize="isAuthenticated()"></textarea>
 <br/>
 
 <input type="submit" value="답변등록" class="btn btn-primary my-2"/>
@@ -52,7 +126,29 @@
 
 </div>
 
+<script type="text/javascript" layout:fragment="deleteScript">
+//특정 class를 가지고 있는 모든 DOM 요소에 접근하기 위한 메소드
+const deleteBtn = document.getElementsByClassName("delete");
 
+Array.from(deleteBtn).forEach(function(btn) {
+	btn.addEventListener('click',function() {
+		if (confirm("게시글을 삭제하시겠습니까?")) {
+			location.href = this.dataset.uri;
+		}
+	});
+});
+
+const recommendBtn = document.getElementsByClassName("recommend");
+
+Array.from(recommendBtn).forEach(function(btn) {
+	btn.addEventListener('click',function() {
+		if (confirm("게시글을 추천하시겠습니까?")) {
+			location.href = this.dataset.uri;
+		}
+	});
+});
+
+</script>
 
 
 
