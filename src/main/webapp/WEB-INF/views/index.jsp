@@ -12,7 +12,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-
+ 
   <!-- Basic -->
   <!-- Mobile Metas -->
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -806,7 +806,7 @@ function loadLists() {
     
 }
 
-timer = setInterval(loadLists, 5000);
+//timer = setInterval(loadLists, 5000);
 
 
 
@@ -844,8 +844,8 @@ function handleCheckboxCookie(checkbox) {
         console.log('쿠키 ' + cookieName + '가 제거되었습니다.');
     }
 }
-
-
+ 
+ 
 </script>
 
 
