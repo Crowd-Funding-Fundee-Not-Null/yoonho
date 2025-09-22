@@ -34,6 +34,8 @@ PUBLIC "-/mybatis.org//DTD Config 3.0//EN"
 		<mapper resource="com/fundee/mapper/NoticeMapper.xml"/>
 		<mapper resource="com/fundee/mapper/AdminMapper.xml"/>
 		<mapper resource="com/fundee/mapper/PostsMapper.xml"/>
+		<mapper resource="com/fundee/mapper/LoginMapper.xml"/>
+		<mapper resource="com/fundee/mapper/BuyMapper.xml"/>
 	</mappers>
 	
 	

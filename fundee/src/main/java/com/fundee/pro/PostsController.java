@@ -39,6 +39,32 @@ public class PostsController {
 	public String created_ok(PostsDTO dto, @RequestParam(value = "upload", required = false) MultipartFile mf,
 	        HttpServletRequest request) throws Exception {
 
+		
+		String goalAmountStr = request.getParameter("goalAmount");
+        String currentAmountStr = request.getParameter("currentAmount");
+        
+        // 빈 문자열이거나 null일 경우 0으로 변환
+        int goalAmount = 0;
+        int currentAmount = 0;
+        
+        try {
+            if (goalAmountStr != null && !goalAmountStr.isEmpty()) {
+                goalAmount = Integer.parseInt(goalAmountStr);
+            }
+
+            if (currentAmountStr != null && !currentAmountStr.isEmpty()) {
+                currentAmount = Integer.parseInt(currentAmountStr);
+            }
+        } catch (NumberFormatException e) {
+            // 숫자 변환 실패 시 예외 처리
+            throw new IllegalArgumentException("목표 금액과 현재 모금액은 올바른 숫자 형식이어야 합니다.");
+        }
+        
+        dto.setGoal_amount(goalAmount);
+        dto.setCurrent_amount(currentAmount);		
+		
+		
+		
 	    // 서버 측 유효성 검사
 	    if (dto.getTitle() == null || dto.getTitle().trim().isEmpty()) {
 	        throw new IllegalArgumentException("상품 제목은 필수 입력 항목입니다.");
@@ -105,14 +131,15 @@ public class PostsController {
 
 	// 게시물 상세 페이지
 	@RequestMapping(value = "/article.do", method = RequestMethod.GET)
-	public ModelAndView article(@RequestParam int postsNum) throws Exception {
+	public ModelAndView article(@RequestParam int posts_num) throws Exception {
 		
 		ModelAndView mav = new ModelAndView();
 		
-		PostsDTO dto = postsDAO.getReadData(postsNum);
+		PostsDTO dto = postsDAO.getReadData(posts_num);
+		
 		
 		if (dto != null) {
-			postsDAO.updateHitCount(postsNum);
+			postsDAO.updateHitCount(posts_num);
 			mav.addObject("dto", dto);
 			mav.setViewName("posts_article");
 		} else {
@@ -124,9 +151,9 @@ public class PostsController {
 
 	// 수정 폼으로 이동
 	@RequestMapping(value = "/updated.do", method = RequestMethod.GET)
-	public ModelAndView updated(@RequestParam int postsNum) throws Exception {
+	public ModelAndView updated(@RequestParam int posts_num) throws Exception {
 		ModelAndView mav = new ModelAndView();
-		PostsDTO dto = postsDAO.getReadData(postsNum);
+		PostsDTO dto = postsDAO.getReadData(posts_num);
 		mav.addObject("dto", dto);
 		mav.setViewName("posts_updated");
 		return mav;
@@ -136,6 +163,32 @@ public class PostsController {
 	@RequestMapping(value = "/updated_ok.do", method = RequestMethod.POST)
 	public String updated_ok(PostsDTO dto, @RequestParam(value = "upload", required = false) MultipartFile mf, HttpServletRequest request) throws Exception {
 
+		 // 1. 목표 금액과 현재 모금액 필드 처리
+        String goalAmountStr = request.getParameter("goalAmount");
+        String currentAmountStr = request.getParameter("currentAmount");
+        
+        // 빈 문자열이거나 null일 경우 0으로 변환
+        int goalAmount = 0;
+        int currentAmount = 0;
+        
+        try {
+            if (goalAmountStr != null && !goalAmountStr.isEmpty()) {
+                goalAmount = Integer.parseInt(goalAmountStr);
+            }
+
+            if (currentAmountStr != null && !currentAmountStr.isEmpty()) {
+                currentAmount = Integer.parseInt(currentAmountStr);
+            }
+        } catch (NumberFormatException e) {
+            // 숫자 변환 실패 시 예외 처리
+            throw new IllegalArgumentException("목표 금액과 현재 모금액은 올바른 숫자 형식이어야 합니다.");
+        }
+        
+        dto.setGoal_amount(goalAmount);
+        dto.setCurrent_amount(currentAmount);
+		
+		
+        //파일 수정 시 필요한 메소드
 	    String root = request.getSession().getServletContext().getRealPath("/");
 	    String savePath = root + "resources" + File.separator + "uploads";
 
@@ -162,15 +215,15 @@ public class PostsController {
 
 	    postsDAO.updateData(dto);
 
-	    return "redirect:/article.do?postsNum=" + dto.getPosts_num();
+	    return "redirect:/article.do?posts_num=" + dto.getPosts_num();
 	}
 
 	// 게시물 삭제
 	@RequestMapping(value = "/deleted.do", method = RequestMethod.GET)
-	public String deleted(@RequestParam int postsNum, HttpServletRequest request) throws Exception {
+	public String deleted(@RequestParam int posts_num, HttpServletRequest request) throws Exception {
 	    
 	    // 파일도 함께 삭제
-	    PostsDTO dto = postsDAO.getReadData(postsNum);
+	    PostsDTO dto = postsDAO.getReadData(posts_num);
 	    if (dto != null && dto.getImage_file() != null && !dto.getImage_file().isEmpty()) {
 	        String root = request.getSession().getServletContext().getRealPath("/");
 	        String savePath = root + "resources" + File.separator + "uploads";
@@ -180,15 +233,15 @@ public class PostsController {
 	        }
 	    }
 	    
-	    postsDAO.deleteData(postsNum);
+	    postsDAO.deleteData(posts_num);
 	    
 	    return "redirect:/posts_list.do";
 	}
 	
 	@RequestMapping(value = "/deleted_ok.action", method = RequestMethod.GET)
-	public String deleted_ok(@RequestParam int postsNum) throws Exception {
+	public String deleted_ok(@RequestParam int posts_num) throws Exception {
 		
-		postsDAO.deleteData(postsNum);
+		postsDAO.deleteData(posts_num);
 		
 		return "redirect:/posts_list.do";
 	}

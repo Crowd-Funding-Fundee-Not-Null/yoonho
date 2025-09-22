@@ -34,9 +34,9 @@
 
     <select id="getLists" parameterType="map" resultType="com.fundee.dto.PostsDTO">
         select * from (select rownum rnum, data.* from (
-            select POSTS_NUM as postsNum, PRICE as price, USERID as userId, TITLE as title, GOAL_AMOUNT as goalAmount, CURRENT_AMOUNT as currentAmount,
-                   to_char(START_DATE, 'yyyy-mm-dd') as startDate, to_char(END_DATE, 'yyyy-mm-dd') as endDate, STATUS as status, CONTENT as content, HITCOUNT as hitCount,
-                   to_char(REG_DATE, 'yyyy-mm-dd') as regDate, IMAGE_FILE as imageFile from posts
+            select POSTS_NUM, PRICE, USERID, TITLE, GOAL_AMOUNT, CURRENT_AMOUNT,
+                   to_char(START_DATE, 'yyyy-mm-dd') as start_date, to_char(END_DATE, 'yyyy-mm-dd') as end_date, STATUS, CONTENT, HITCOUNT,
+                   to_char(REG_DATE, 'yyyy-mm-dd') as reg_date, IMAGE_FILE from posts
             <if test="searchValue != null and searchValue != ''">
                 where ${searchKey} like '%' || #{searchValue} || '%'
             </if>
@@ -47,13 +47,13 @@
     </select>
 
     <select id="getReadData" parameterType="int" resultType="com.fundee.dto.PostsDTO">
-        select POSTS_NUM as postsNum, PRICE as price, USERID as userId, TITLE as title, GOAL_AMOUNT as goalAmount, CURRENT_AMOUNT as currentAmount,
-               to_char(START_DATE, 'yyyy-mm-dd') as startDate, to_char(END_DATE, 'yyyy-mm-dd') as endDate, STATUS as status, CONTENT as content, HITCOUNT as hitCount,
-               to_char(REG_DATE, 'yyyy-mm-dd') as regDate, IMAGE_FILE as imageFile from posts where POSTS_NUM = #{postsNum}
+        select POSTS_NUM, PRICE, USERID, TITLE, GOAL_AMOUNT, CURRENT_AMOUNT,
+               to_char(START_DATE, 'yyyy-mm-dd') as start_date, to_char(END_DATE, 'yyyy-mm-dd') as end_date, STATUS, CONTENT, HITCOUNT,
+               to_char(REG_DATE, 'yyyy-mm-dd') as reg_date, IMAGE_FILE from posts where POSTS_NUM = #{posts_num}
     </select>
 
     <update id="updateHitCount" parameterType="int">
-        update posts set HITCOUNT = HITCOUNT + 1 where POSTS_NUM = #{postsNum}
+        update posts set HITCOUNT = HITCOUNT + 1 where POSTS_NUM = #{posts_num}
     </update>
 
     <!-- UPDATE 쿼리도 jdbcType 추가 -->
@@ -67,11 +67,11 @@
                         STATUS=#{status, jdbcType=VARCHAR}, 
                         CONTENT=#{content, jdbcType=VARCHAR},
                         IMAGE_FILE=#{imageFile, jdbcType=VARCHAR} 
-        where POSTS_NUM = #{postsNum}
+        where POSTS_NUM = #{posts_num}
     </update>
 
     <delete id="deleteData" parameterType="int">
-        delete from posts where POSTS_NUM=#{postsNum}
+        delete from posts where POSTS_NUM=#{posts_num}
     </delete>
 
 </mapper>

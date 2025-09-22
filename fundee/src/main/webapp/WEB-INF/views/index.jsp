@@ -399,9 +399,36 @@ body {
                   <i class="fa fa-search"></i>
                 </button>
               </form>
-              <a href="" class="order_online">
-                Order Online
-              </a>
+              
+              
+              
+              <c:choose>
+				  <c:when test="${not empty sessionScope.loginId}">
+				    <!-- 로그인 상태: 로그아웃 버튼 -->
+				    <a href="${pageContext.request.contextPath}/logout" class="order_online">logout</a>
+				
+				    <!-- 닉네임(없으면 ID로 대체) -->
+				    <span style="margin-left:10px; color:black;">
+				      <c:choose>
+				        <c:when test="${not empty sessionScope.loginNickname}">
+				          ${fn:escapeXml(sessionScope.loginNickname)}님
+				        </c:when>
+				        <c:otherwise>
+				          ${fn:escapeXml(sessionScope.loginId)}님
+				        </c:otherwise>
+				      </c:choose>
+				    </span>
+				  </c:when>
+				
+				  <c:otherwise>
+				    <!-- 비로그인 상태: 로그인/회원가입 -->
+				    <a href="${pageContext.request.contextPath}/loginForm.do" class="order_online">login</a>
+				    <a href="${pageContext.request.contextPath}/join.do" class="order_online">join</a>
+				  </c:otherwise>
+				</c:choose>
+              
+              
+              
             </div>
           </div>
         </nav>

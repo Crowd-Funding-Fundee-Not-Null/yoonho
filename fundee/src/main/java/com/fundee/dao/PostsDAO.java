@@ -32,19 +32,19 @@ public class PostsDAO {
 	}
 	
 	// 상세 조회 메소드 (반환 타입 수정)
-	public PostsDTO getReadData(int posts_Num) throws Exception {
-		return postsMapper.getReadData(posts_Num);
+	public PostsDTO getReadData(int posts_num) throws Exception {
+		return postsMapper.getReadData(posts_num);
 	}
 	
-	public void updateHitCount(int posts_Num) throws Exception {
-		postsMapper.updateHitCount(posts_Num);
+	public void updateHitCount(int posts_num) throws Exception {
+		postsMapper.updateHitCount(posts_num);
 	}
 	
 	public void updateData(PostsDTO dto) throws Exception {
 		postsMapper.updateData(dto);
 	}
 
-	public void deleteData(int posts_Num) throws Exception {
-		postsMapper.deleteData(posts_Num);
+	public void deleteData(int posts_num) throws Exception {
+		postsMapper.deleteData(posts_num);
 	}
 }
