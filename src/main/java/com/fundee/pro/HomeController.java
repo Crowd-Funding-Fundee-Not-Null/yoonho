@@ -1,5 +1,6 @@
 package com.fundee.pro;
 
+import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,12 +8,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,6 +47,10 @@ public class HomeController {
 		List<Integer> numList = adminDAO.getPostsNums();
 		
 		int size = numList.size();
+		
+		if (size==0) {
+			return "index";
+		}
 		
 		
 		for (int i=0; i<size; i++) {
@@ -102,6 +109,49 @@ public class HomeController {
 	}
 	
 	
+	@RequestMapping(value = "wishlist.do", method = RequestMethod.GET)
+	public String getWishlist(HttpServletRequest req) throws Exception {
+		
+		Cookie[] c = req.getCookies();
+		List<PostsDTO> lists = new ArrayList<PostsDTO>();
+		
+		
+		String cookieStr = "";
+		
+		for (int i=0; i<c.length; i++) {
+			if (c[i].getName().equals("wishlist")) {
+				cookieStr = URLDecoder.decode(c[i].getValue(),"UTF-8");
+			}
+		}
+		
+		
+		if (cookieStr==null || cookieStr.equals("")) {
+			return "wishlist";
+		}
+		
+		
+		cookieStr = cookieStr.replaceAll("wishlist=", "");
+		cookieStr = cookieStr.substring(1,cookieStr.length()-1);
+		
+		if (cookieStr==null || cookieStr.equals("")) {
+			return "wishlist";
+		}
+		
+		String[] cookies = cookieStr.split(",");
+		
+		
+		for (int i=0; i<cookies.length; i++) {
+			String[] tempArr = cookies[i].substring(1, cookies[i].length()-1).split("_");
+			cookies[i] = tempArr[tempArr.length-1];
+			lists.add(postsDAO.getReadData(Integer.parseInt(cookies[i])));
+		}
+		
+		
+		
+		req.setAttribute("lists", lists);
+		
+		return "wishlist";
+	}
 	
 	
 	
@@ -137,6 +187,17 @@ public class HomeController {
 		
 		return "book";
 	}
+	
+	
+//	@RequestMapping(value = "alert", method = RequestMethod.GET)
+//	public String alert(HttpServletRequest req, String msg, String url) {
+//		
+//		req.setAttribute("msg", msg);
+//		req.setAttribute("url", url);
+//		
+//		return "alert";
+//	}
+	
 	
 	
 }

@@ -3,6 +3,9 @@
 <%
 	request.setCharacterEncoding("UTF-8");
 	String cp = request.getContextPath();
+	
+	int role = (Integer)request.getAttribute("role");
+	
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -100,11 +103,10 @@
 	background: rgb(248,249,250);
 }
 
-.notice_return_button:hover,.notice_delete_button:hover {
+.notice_return_button:hover {
 	background: rgb(238,238,238);
 	cursor: pointer;
 }
-
 
 .notice_write_button_wrapper {
 	margin: 0 auto;
@@ -119,6 +121,16 @@
 
 </style>
 
+
+
+<% if (role==1) { %>
+<style>
+.notice_delete_button:hover {
+	background: rgb(238,238,238);
+	cursor: pointer;
+}
+</style>
+<% } %>
 
 
 
@@ -140,7 +152,7 @@ function delete1(notice_num,pageNum) {
 		        text: "정상적으로 삭제되었습니다.",
 		        icon: "success"
 		      }).then((result) => {
-		    		  location.href="notice_delete_ok.do?notice_num="+notice_num+"&pageNum="+pageNum;	  
+		    		  location.href="notice_delete.do?notice_num="+notice_num+"&pageNum="+pageNum;	  
 		      });
 			  
 		  }
@@ -203,8 +215,18 @@ function delete1(notice_num,pageNum) {
 	    			onclick="javascript:location.href='notice.do?pageNum=${pageNum}';">
 	    			목록으로
 	    		</div>
-	    		<div class="notice_delete_button"
-	    			onclick="delete1(${notice_num },${pageNum})">
+	    		
+	    		
+	    		
+	    		
+	    		<div class="notice_delete_button" 
+	    			<c:if test="${role==0 }">
+	    				style="color: gray;"
+	    			</c:if>
+	    			<c:if test="${role==1 }">
+	    				onclick="delete1(${notice_num },${pageNum})"
+	    			</c:if>
+	    		>
 	    			삭제하기
 	    		</div>
     		</div>

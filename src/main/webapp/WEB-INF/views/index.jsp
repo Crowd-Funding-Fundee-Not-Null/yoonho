@@ -1,3 +1,4 @@
+<%@page import="java.net.URLDecoder"%>
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -12,7 +13,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
- 
+   
   <!-- Basic -->
   <!-- Mobile Metas -->
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -244,7 +245,10 @@ body {
 	box-shadow: 0 0 3px;
 }
 
-
+.main-rcm-img {
+	position: relative;
+	cursor: pointer;
+}
 
 
 
@@ -334,12 +338,19 @@ body {
 
 
 
+<script type="text/javascript">
+
+
+
+</script>
+
 
 
 
 
 </head>
 <body>
+
 
   <div class="hero_area">
   
@@ -375,7 +386,7 @@ body {
                 <a class="nav-link" href="index.do">Home <span class="sr-only">(current)</span></a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="menu.do">펀딩하기</a>
+                <a class="nav-link" href="posts_list.do">펀딩하기</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="about.do">About</a>
@@ -568,15 +579,11 @@ body {
 	                <span class="main-rcm-ratecount">(324)</span>
 	              </div>
 	                
-	                
-	                
-	                
-	                
-	                
-	                
 	              </div>
 	            </div>
 	          </div>
+	          
+	          
 	          <div class="col-md-6  ">
 	            <div class="box main-rcm-box">
 	              <div class="detail-box">
@@ -648,6 +655,9 @@ body {
 	        <div style="width:100%; margin-left: 15px; justify-content: space-between;" id="random-container">
 	        
 	        
+	        
+	        <!-- 
+	        
 	        <c:forEach var="dto" items="${lists}">
 				<div style="width: 24.6%; height: 320px; display: inline-block;">
 					<div style="position: relative;"> 
@@ -656,12 +666,8 @@ body {
 		                	
 							<label class="likey-container" >
 							
-							  <input type="checkbox" id="myCheckbox_${dto.posts_num }" name="myCheckbox" onclick="handleCheckboxCookie(this);" 
-							  	value="${dto.title}" 
-							  <c:if test="${fn:contains(cookie.myCheckboxCookie.value, dto.title)}">
-				                   checked="checked"
-				               </c:if>
-							  >
+							  <input type="checkbox" id="myCheckbox_${dto.posts_num }" name="myCheckbox" 
+							  	onclick="handleCheckboxCookie(this);" value="${dto.title}"/>
 							  
 							  <div class="checkmark">
 							    <svg viewBox="0 0 290 290">
@@ -672,11 +678,6 @@ body {
 		                	
 		                	
 		                	
-		                <!-- 
-		                <div >
-		                	123
-		                </div>
-		                 -->	
 		                
 					</div>
 					<div>
@@ -707,7 +708,7 @@ body {
 			</c:forEach>			
 				
 				
-				
+			 -->	
 				
 				
 				
@@ -721,7 +722,7 @@ body {
  
 
   <!-- end offer section -->
-
+	<!-- 15:26 -->
   <!-- food section -->
 
   
@@ -775,38 +776,89 @@ function loadLists() {
             eachdiv.style.height = "320px";
             eachdiv.style.display = "inline-block";
             const cp = "<%=cp %>";
-            eachdiv.innerHTML = ''
-            	+ '<div>'
-            	+ '  <img src="'+cp+'/resources/images/'+ dto.image_file +'" class="main-rcm-img"/>'
-            	+ '</div>'
-            	+ '<div>'
-            	+ '  <span class="main-rcm-percent">83%</span> '
-            	+ '  <span class="main-rcm-amount">1,142,800원</span><br/>'
-            	+ '</div>'
-            	+ '<div class="detail-box-price">'
-            	+ '  <span class="main-rcm-price">'+ dto.price +'원~</span>'
-            	+ '</div>'
-            	+ '<div class="detail-box-subject">'
-            	+ '  <span class="main-rcm-subject">'+ dto.title +'</span><br/>'
-            	+ '</div>'
-            	+ '<div class="detail-box-seller">'
-            	+ '  <span class="main-rcm-seller">'+ dto.userId +'</span><br/>'
-            	+ '</div>'
-            	+ '<div class="detail-box-bottom">'
-            	+ '  <i class="fa fa-star" style="color: #ffca1a;"></i>'
-            	+ '  <span class="main-rcm-rate">4.8</span> '
-            	+ '  <span class="main-rcm-ratecount">(324)</span>'
-            	+ '</div>';
+            
+            const wishlist = getWishlist();
+            var ch = '';
+            var code = dto.title+'_'+dto.posts_num;
+            if (wishlist.includes(code)) {
+              ch += 'checked';
+         	}
+            
+            
+            const current_amount_formatted = new Intl.NumberFormat('ko-KR').format(dto.current_amount);
+            const percentage_formatted = new Intl.NumberFormat('ko-KR').
+            	format((dto.current_amount / dto.goal_amount) * 100);
+            const price_formatted = new Intl.NumberFormat('ko-KR').format(dto.price);
+            
+            
+            eachdiv.innerHTML = `
+            
+            	<div style='position: relative;'>
+            	
+            		<img src="`+cp+`/resources/images/`+ dto.image_file +`" class="main-rcm-img"  
+            			onclick="openProductDetail(`+dto.posts_num+`)"/>
+            		
+            		<label class="likey-container" >
+            			<input type="checkbox" id="myCheckbox_`+dto.posts_num +`" name="myCheckbox" 
+            				onclick="handleCheckboxCookie(this);" value="`+dto.title+`_`+dto.posts_num+`" `+ch+`/>
+            				
+            			<div class="checkmark">
+            				<svg viewBox="0 0 290 290">
+            				<rect fill="none" height="256" width="256"></rect>
+            				<path d="M224.6,51.9a59.5,59.5,0,0,0-43-19.9,60.5,60.5,0,0,0-44,17.6L128,59.1l-7.5-7.4C97.2,28.3,59.2,26.3,35.9,47.4a59.9,59.9,0,0,0-2.3,87l83.1,83.1a15.9,15.9,0,0,0,22.6,0l81-81C243.7,113.2,245.6,75.2,224.6,51.9Z" stroke-width="17px" stroke="#ffffff" fill="#a9a9a9"></path></svg>
+            			</div>
+            			
+            		</label>
+            		
+            	</div>
+            	
+            	<div>
+            		<span class="main-rcm-percent">
+            			`+percentage_formatted+`%
+            		</span> 
+            		<span class="main-rcm-amount">
+            			`+current_amount_formatted+`원
+            		</span><br/>
+            	</div>
+            	
+            	<div class="detail-box-price">
+            		<span class="main-rcm-price">`+ price_formatted +`원~</span>
+            	</div>
+            	
+            	<div class="detail-box-subject">
+            		<span class="main-rcm-subject">`+ dto.title +`</span><br/>
+            	</div>
+            	
+            	<div class="detail-box-seller">
+            		<span class="main-rcm-seller">`+ dto.userId +`</span><br/>
+            	</div>
+            	
+            	<div class="detail-box-bottom">
+            		<i class="fa fa-star" style="color: #ffca1a;"></i>
+            		<span class="main-rcm-rate">4.8</span> 
+            		<span class="main-rcm-ratecount">(324)</span>
+            	</div>`;
             	
             container.appendChild(eachdiv);
         });
     })
+    .then(clearInterval(timer))
+    .then(timer = setInterval(loadLists, 5000))
     .catch(err => console.error("Fetch error:", err));
-    
     
 }
 
-//timer = setInterval(loadLists, 5000);
+
+var timer = setInterval(loadLists, 5000);
+window.onload = loadLists();
+
+
+
+function openProductDetail(posts_num) {
+	location.href = 'article.do?posts_num='+posts_num;
+}
+
+
 
 
 
@@ -814,38 +866,64 @@ function loadLists() {
 
 
 
+
+
+
+
+
 <script>
 
-//쿠키 설정 함수
-function setCookie(name, value, days) {
-    const expires = new Date();
-    expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
-    const encodedValue = encodeURIComponent(value)
-    document.cookie = name+'='+encodedValue+';expires='+expires.toUTCString()+'};path=/';
+//찜 목록 추가
+function addWish(itemId) {
+  let wishlist = getWishlist();
+  if (!wishlist.includes(itemId)) {
+    wishlist.push(itemId);
+    setWishlist(wishlist);
+  }
 }
 
-// 쿠키 제거 함수
-function deleteCookie(name) {
-    document.cookie = name+'=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;';
+function removeWish(itemId) {
+  let wishlist = getWishlist().filter(id => id !== itemId);
+  setWishlist(wishlist);
 }
 
-// 체크박스 상태에 따라 쿠키를 처리하는 메인 함수
+
 function handleCheckboxCookie(checkbox) {
-    const cookieName = "myCheckboxCookie";
-    const cookieValue = checkbox.value;
-
+    const itemId = checkbox.value;
+    
     if (checkbox.checked) {
-        // 체크되면 쿠키 추가 (예: 유효기간 30일)
-        setCookie(cookieName, cookieValue, 30);
-        console.log('쿠키 ' + cookieName + '가 값 ' + cookieValue + '로 설정되었습니다.');
+    	addWish(itemId);
     } else {
-        // 체크가 해제되면 쿠키 제거
-        deleteCookie(cookieName);
-        console.log('쿠키 ' + cookieName + '가 제거되었습니다.');
+    	removeWish(itemId);
     }
 }
- 
- 
+
+function getWishlist() {
+  const cookie = document.cookie
+    .split("; ")
+    .find(row => row.startsWith("wishlist="));
+  
+  return cookie ? JSON.parse(decodeURIComponent(cookie.split("=")[1])) : [];
+}
+
+function setWishlist(list) {
+  document.cookie = "wishlist=" + encodeURIComponent(JSON.stringify(list)) + "; path=/";
+}
+
+
+function applyWishlistToCheckboxes() {
+	  const wishlist = getWishlist();
+	  document.querySelectorAll('input[type="checkbox"][name="myCheckbox"]').forEach(cb => {
+	    if (wishlist.includes(cb.value)) {
+	      cb.setAttribute("checked", "checked")
+	    }
+	  });
+	}
+
+
+
+
+
 </script>
 
 

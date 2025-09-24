@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import javax.management.MXBean;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.fundee.dao.LoginDAO;
 import com.fundee.dao.NoticeDAO;
 import com.fundee.dto.NoticeDTO;
 import com.fundee.util.MyUtil;
@@ -33,6 +35,8 @@ public class NoticeController {
 	@Autowired
 	MyUtil myUtil;
 	
+	@Autowired
+	LoginDAO loginDAO;
 	
 	
 	@RequestMapping(value = "notice.do", method = RequestMethod.GET)
@@ -100,6 +104,17 @@ public class NoticeController {
 		dto.setContent(dto.getContent().replaceAll("\n", "<br/>"));
 		
 		
+		HttpSession session = req.getSession();
+		int role = 0;
+		
+		String loginId = (String)session.getAttribute("loginId");
+		
+		if (loginId!=null && !loginId.equals("")) {
+			role = loginDAO.findRoleById(loginId);
+		}
+		
+		
+		req.setAttribute("role", role);
 		req.setAttribute("dto", dto);
 		req.setAttribute("notice_num", notice_num);
 		req.setAttribute("pageNum", pageNum);
@@ -121,18 +136,18 @@ public class NoticeController {
 	
 	
 	
-	@RequestMapping(value = "notice_write_ok.do", method = RequestMethod.POST)
-	public String notice_write_ok(NoticeDTO dto, HttpServletRequest req, HttpServletResponse resp) throws Exception {
+	@RequestMapping(value = "notice_write.do", method = RequestMethod.POST)
+	public String notice_write(NoticeDTO dto, HttpServletRequest req, HttpServletResponse resp) throws Exception {
 	
-		//NoticeDTO dto = new NoticeDTO();
+		HttpSession session = req.getSession();
 		
 		int maxNum = noticeDAO.getMaxNum();
 		
 		dto.setNotice_num(maxNum+1);
-		dto.setId("yh"); //나중에 세션 완료되면 작성한 관리자 아이디를 받아오도록 수정해야함
-//		dto.setTitle(req.getParameter("title"));
-//		dto.setContent(req.getParameter("content"));
-//		dto.setImportance(Integer.parseInt(req.getParameter("importance")));
+		dto.setId((String)session.getAttribute("loginId")); //나중에 세션 완료되면 작성한 관리자 아이디를 받아오도록 수정해야함
+		dto.setTitle(req.getParameter("title"));
+		dto.setContent(req.getParameter("content"));
+		dto.setImportance(Integer.parseInt(req.getParameter("importance")));
 		
 		noticeDAO.insertNotice(dto);
 		
@@ -142,8 +157,8 @@ public class NoticeController {
 	
 	
 	
-	@RequestMapping(value = "notice_delete_ok.do", method = RequestMethod.GET)
-	public String notice_delete_ok(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+	@RequestMapping(value = "notice_delete.do", method = RequestMethod.GET)
+	public String notice_delete(HttpServletRequest req, HttpServletResponse resp) throws Exception {
 	
 		int num = Integer.parseInt(req.getParameter("notice_num"));
 		String pageNum = req.getParameter("pageNum");

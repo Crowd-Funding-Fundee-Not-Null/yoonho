@@ -86,7 +86,7 @@
                 <a class="nav-link" href="index.do">Home </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="menu.do">Menu</a>
+                <a class="nav-link" href="menu.do">펀딩하기</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="about.do">About</a>

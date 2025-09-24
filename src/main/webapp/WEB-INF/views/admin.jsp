@@ -14,7 +14,7 @@
 <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
 <meta name="generator" content="Jekyll v3.8.5">
 
-<title>Dashboard Template · Bootstrap</title>
+<title>Fundee 관리자</title>
 
 <link rel="canonical" href="https://getbootstrap.com/docs/4.3/examples/dashboard/">
 
@@ -150,6 +150,26 @@ supports ((position: -webkit-sticky) or (position: sticky)) { .sidebar-sticky
 	border-color: transparent;
 	box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);
 }
+
+/*
+ 헤더 부분 이름이 세로로 바뀌는 문제 해결
+*/
+
+table th {
+  white-space: nowrap;   /* 한 줄 유지 */
+  text-align: center;    /* 가운데 정렬 */
+  font-size: 0.875rem;   /* 글자 크기 조정 */
+  padding: 8px;
+}
+
+/* 긴 내용은 말줄임 처리 */
+table th, table td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+
 </style>
 
 
@@ -269,20 +289,33 @@ supports ((position: -webkit-sticky) or (position: sticky)) { .sidebar-sticky
 							<th>ID</th>
 							<th>Nickname</th>
 							<th>Name</th>
-							<th>Address</th>
+							<th>주소</th>
+							<th>상세주소</th>
+							<th>도로명</th>
+							<th>동-호수</th>
 							<th>Join Date</th>
+							<th>Role</th>
+							<th>Email</th>
+							<th>Phone</th>
 						</tr>
 					</thead>
 					<tbody>
 						<c:forEach var="dto" items="${lists }">
 						
 							<tr>
-								<td>${dto.id }</td>
-								
+								<td>${dto.id }</td>								
 								<td>${dto.nickname }</td>
 								<td>${dto.name }</td>
-								<td>${dto.address }</td>
+								<td>${dto.address1 }</td>
+								<td>${dto.address2 }</td>
+								<td>${dto.zip_code }</td>
+								<td>${dto.dong }</td>
 								<td>${dto.join_date }</td>
+								<td>${dto.role }</td>
+								<td>${dto.email }</td>
+								<td>${dto.phone }</td>
+								
+								
 							</tr>
 							
 						</c:forEach>

@@ -12,6 +12,9 @@ public class LoginDTO {
     private String name;
     private String email;
     private String phone;
-    private String address;
+    private String address1;
     private Integer role; 
+    private String address2;
+    private String zip_code;
+    private String dong;
 }

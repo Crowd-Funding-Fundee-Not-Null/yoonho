@@ -27,10 +27,11 @@ public class PostsDTO {
     private String content;// 상품 내용
     private int hitCount; // 조회수
     
+    
     // 파일 업로드 관련 변수 추가
     @JsonIgnore
     private MultipartFile upload; // 파일 자체를 담을 변수
     
     private String image_file;     // 파일명을 담을 변수
-    
+    private String detail_imagefile;
 }

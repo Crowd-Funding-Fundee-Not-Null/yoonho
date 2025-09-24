@@ -226,7 +226,7 @@
 		f.content.value = str;
 		
 		
-		f.action = "notice_write_ok.do";
+		f.action = "notice_write.do";
 		f.submit();		
 		
 	}
