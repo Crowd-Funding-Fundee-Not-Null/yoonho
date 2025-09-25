@@ -200,7 +200,7 @@
 	margin-bottom: 3px;
 }
 .detail-box-subject {
-
+	
 }
 .detail-box-seller {
 	margin-top: 35px;
@@ -357,7 +357,7 @@ function openProductDetail(posts_num) {
 
 function deleteCookie(title,num) {
 	
-	const itemId = title + '_' + num;
+	const itemId = title.substr(0,5) + '_' + num;
 	
 	let wishlist = getWishlist().filter(id => id !== itemId);
 	setWishlist(wishlist);

@@ -211,7 +211,7 @@ body {
 	margin-bottom: 3px;
 }
 .detail-box-subject {
-	
+	width: 250px !important;
 }
 .detail-box-seller {
 	position: absolute;
@@ -793,6 +793,8 @@ function loadLists() {
             const price_formatted = new Intl.NumberFormat('ko-KR').format(dto.price);
             const img_location = dto.image_file.substr(19);
             
+            const temp_title = dto.title.substr(0,5);
+            
             eachdiv.innerHTML = `
             
             	<div style='position: relative;'>
@@ -802,7 +804,7 @@ function loadLists() {
             		
             		<label class="likey-container" >
             			<input type="checkbox" id="myCheckbox_`+dto.posts_num +`" name="myCheckbox" 
-            				onclick="handleCheckboxCookie(this);" value="`+dto.title+`_`+dto.posts_num+`" `+ch+`/>
+            				onclick="handleCheckboxCookie(this);" value="`+temp_title+`_`+dto.posts_num+`" `+ch+`/>
             				
             			<div class="checkmark">
             				<svg viewBox="0 0 290 290">
@@ -891,6 +893,7 @@ function removeWish(itemId) {
 
 
 function handleCheckboxCookie(checkbox) {
+	
     const itemId = checkbox.value;
     
     if (checkbox.checked) {
