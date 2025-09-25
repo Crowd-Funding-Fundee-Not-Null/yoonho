@@ -81,14 +81,21 @@
 			<mapping path="/updated.do" />
 			<mapping path="/notice_write.do" />
 			<mapping path="/notice_delete.do" />
+			<mapping path="/answer_write.do" />
+			<mapping path="/answer_delete.do" />
 			<beans:bean class="com.fundee.pro.AdminInterceptor" id="admin" />
 		</interceptor>
 		<interceptor>
 			<mapping path="/wishlist.do" />
+			<mapping path="/question_write.do" />
+			<mapping path="/question_delete.do" />
 			<beans:bean class="com.fundee.pro.LoginInterceptor" id="login" />
 		</interceptor>
+		<interceptor>
+			<mapping path="/qna_detail.do" />
+			<beans:bean class="com.fundee.pro.QuestionInterceptor" id="question" />
+		</interceptor>
 	</interceptors>
-	
 	
 	
 	

@@ -191,6 +191,7 @@ body {
 }
 .main-rcm-subject {
 	color: #212529;
+	
 }
 .main-rcm-seller {
 	color: gray;
@@ -210,15 +211,15 @@ body {
 	margin-bottom: 3px;
 }
 .detail-box-subject {
-
+	
 }
 .detail-box-seller {
 	position: absolute;
-	bottom: 50px;
+	bottom: 25px;
 }
 .detail-box-bottom {
 	position: absolute;
-	bottom: 22px;
+	bottom: 0px;
 }
 
 
@@ -773,8 +774,9 @@ function loadLists() {
         data.forEach(dto => {
             const eachdiv = document.createElement("div");
             eachdiv.style.width = "25%";
-            eachdiv.style.height = "320px";
+            eachdiv.style.height = "340px";
             eachdiv.style.display = "inline-block";
+            eachdiv.style.verticalAlign = "top";
             const cp = "<%=cp %>";
             
             const wishlist = getWishlist();
@@ -789,13 +791,13 @@ function loadLists() {
             const percentage_formatted = new Intl.NumberFormat('ko-KR').
             	format((dto.current_amount / dto.goal_amount) * 100);
             const price_formatted = new Intl.NumberFormat('ko-KR').format(dto.price);
-            
+            const img_location = dto.image_file.substr(19);
             
             eachdiv.innerHTML = `
             
             	<div style='position: relative;'>
             	
-            		<img src="`+cp+`/resources/images/`+ dto.image_file +`" class="main-rcm-img"  
+            		<img src="`+cp+`/resources/images/`+ img_location +`" class="main-rcm-img"  
             			onclick="openProductDetail(`+dto.posts_num+`)"/>
             		
             		<label class="likey-container" >

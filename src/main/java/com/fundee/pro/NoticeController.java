@@ -21,7 +21,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.fundee.dao.LoginDAO;
 import com.fundee.dao.NoticeDAO;
+import com.fundee.dao.QnaDAO;
+import com.fundee.dto.AnswerDTO;
+import com.fundee.dto.LoginDTO;
 import com.fundee.dto.NoticeDTO;
+import com.fundee.dto.QuestionDTO;
+import com.fundee.util.AlertUtil;
 import com.fundee.util.MyUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -37,6 +42,9 @@ public class NoticeController {
 	
 	@Autowired
 	LoginDAO loginDAO;
+	
+	@Autowired
+	QnaDAO qnaDAO;
 	
 	
 	@RequestMapping(value = "notice.do", method = RequestMethod.GET)
@@ -172,9 +180,219 @@ public class NoticeController {
 	
 	
 	
+	//QNA 부분
+	
+	@RequestMapping(value = "qna.do", method = RequestMethod.GET)
+	public String qna(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+		
+		String cp = req.getContextPath();
+		
+		
+		String pageNum = req.getParameter("pageNum");
+		
+		int currentPage = 1;
+		
+		if (pageNum!=null) {
+			currentPage = Integer.parseInt(pageNum);
+		}
+		
+		int dataCount = qnaDAO.getQuestionDataCount();
+		
+		int numPerPage = 10;
+		int totalPage = myUtil.getPagecount(numPerPage, dataCount);
+		int numPerBlock = 5;
+		
+		if (currentPage > totalPage) {
+			currentPage = totalPage;
+		}
+		
+		int start = (currentPage-1)*numPerPage+1;
+		int end = start+numPerPage-1;
+		
+		String listUrl = cp + "/qna.do";
+		
+		List<QuestionDTO> questionLists = qnaDAO.getAllQuestion(start, end);
+		
+		
+		int count = 0;
+		for (QuestionDTO dto : questionLists) {
+			dto.setName(qnaDAO.getMemberDetail(dto.getId()).getNickname());
+			dto.setReg_date(dto.getReg_date().substring(0,10));
+			dto.setBoard_num(dataCount-(currentPage-1)*numPerPage-count);
+			dto.setAnswered(qnaDAO.getAnswered(dto.getQuestion_num())==0?false:true);
+			count++;
+		}
+		
+		
+		
+		String pageIndexList = myUtil.pageIndexList(currentPage, totalPage, numPerBlock, listUrl);
+		
+		req.setAttribute("pageIndexList", pageIndexList);
+		req.setAttribute("dataCount", dataCount);
+		req.setAttribute("currentPage", currentPage);
+		
+		req.setAttribute("lists", questionLists);
+		
+		
+		return "qna";
+	}
+	
+	
+	@RequestMapping(value = "qna_detail.do", method = RequestMethod.GET)
+	public String qna_detail(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+	
+		HttpSession session = req.getSession();
+		
+		String pageNum = req.getParameter("pageNum");
+		
+		int question_num = Integer.parseInt(req.getParameter("question_num"));
+		
+		QuestionDTO questionDTO = qnaDAO.getQuestionDetail(question_num);
+		
+		
+		questionDTO.setContent(questionDTO.getContent().replaceAll("\n", "<br/>"));
+		
+		
+		if (qnaDAO.getAnswered(questionDTO.getQuestion_num())>0) {
+			questionDTO.setAnswered(true);
+			AnswerDTO answerDTO = qnaDAO.getAnswer(question_num);
+			answerDTO.setContent(answerDTO.getContent().replaceAll("\n", "<br/>"));
+			req.setAttribute("answerDTO", answerDTO);
+		} else {
+			questionDTO.setAnswered(false);
+		}
+		
+		questionDTO.setAnswered(qnaDAO.getAnswered(questionDTO.getQuestion_num())==0?false:true);
+		
+		int role = 0;
+		int isAuthorized = 0;
+		
+		
+		String loginId = (String)session.getAttribute("loginId");
+		
+		if (loginId!=null && !loginId.equals("")) {
+			role = loginDAO.findRoleById(loginId);
+			if (loginId.equals(questionDTO.getId())) {
+				isAuthorized = 1;
+			}
+		}
+		
+		
+		req.setAttribute("isAuthorized", isAuthorized);
+		req.setAttribute("role", role);
+		req.setAttribute("dto", questionDTO);
+		req.setAttribute("question_num", question_num);
+		req.setAttribute("pageNum", pageNum);
+		
+		return "qna_detail";
+	}
 	
 	
 	
+	@RequestMapping(value = "question_delete.do", method = RequestMethod.GET)
+	public String question_delete(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+	
+		int question_num = Integer.parseInt(req.getParameter("question_num"));
+		String pageNum = req.getParameter("pageNum");
+		
+		
+		if (qnaDAO.getAnswered(question_num)>0) {
+			qnaDAO.deleteAnswerOfQuestion(question_num);
+		}
+		
+		
+		qnaDAO.deleteQuestion(question_num);
+		
+		return "redirect:/qna.do?pageNum="+pageNum;
+	}
+	
+	
+	
+	
+	@RequestMapping(value = "question_write.do", method = RequestMethod.GET)
+	public String question_write(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+	
+		String pageNum = req.getParameter("pageNum");
+		
+		req.setAttribute("pageNum", pageNum);
+		
+		return "question_write";
+	}
+	
+	
+	
+	
+	@RequestMapping(value = "question_write.do", method = RequestMethod.POST)
+	public String question_write(QuestionDTO dto, HttpServletRequest req, HttpServletResponse resp) throws Exception {
+	
+		HttpSession session = req.getSession();
+		
+		int maxNum = qnaDAO.getQuestionMaxNum();
+		
+		dto.setQuestion_num(maxNum+1);
+		dto.setId((String)session.getAttribute("loginId")); //나중에 세션 완료되면 작성한 관리자 아이디를 받아오도록 수정해야함
+		dto.setTitle(req.getParameter("title"));
+		dto.setContent(req.getParameter("content"));
+		dto.setSecret(Integer.parseInt(req.getParameter("secret")));
+		
+		qnaDAO.insertQuestion(dto);
+		
+		
+		return "redirect:/qna.do";
+	}
+	
+	
+	
+	@RequestMapping(value = "answer_write.do", method = RequestMethod.GET)
+	public String answer_write(int question_num,HttpServletRequest req, HttpServletResponse resp) throws Exception {
+	
+		String pageNum = req.getParameter("pageNum");
+		QuestionDTO dto = qnaDAO.getQuestionDetail(question_num);
+		
+		
+		dto.setTitle("답변 : " + dto.getTitle());
+		
+		
+		req.setAttribute("dto", dto);
+		req.setAttribute("pageNum", pageNum);
+		
+		return "answer_write";
+	}
+	
+	
+	@RequestMapping(value = "answer_write.do", method = RequestMethod.POST)
+	public String answer_write(AnswerDTO dto, HttpServletRequest req, HttpServletResponse resp) throws Exception {
+	
+		HttpSession session = req.getSession();
+		
+		int maxNum = qnaDAO.getAnswerMaxNum();
+		
+		dto.setAnswer_num(maxNum+1);
+		dto.setId((String)session.getAttribute("loginId")); //나중에 세션 완료되면 작성한 관리자 아이디를 받아오도록 수정해야함
+		
+		qnaDAO.insertAnswer(dto);
+		
+		
+		
+		return "redirect:/qna.do";
+	}
+	
+	
+	@RequestMapping(value = "answer_delete.do", method = RequestMethod.GET)
+	public String answer_delete(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+	
+		int question_num = Integer.parseInt(req.getParameter("question_num"));
+		int answer_num = Integer.parseInt(req.getParameter("answer_num"));
+		String pageNum = (String)req.getParameter("pageNum");
+		
+		
+		System.out.println(answer_num+","+question_num+","+pageNum);
+		
+		
+		qnaDAO.deleteAnswer(answer_num);
+		
+		return "redirect:/qna_detail.do?question_num="+question_num+"&pageNum="+pageNum;
+	}
 	
 	
 	

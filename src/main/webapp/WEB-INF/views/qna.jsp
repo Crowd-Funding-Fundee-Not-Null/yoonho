@@ -59,41 +59,24 @@
 }
 
 
-.notice_list_wrapper2 {
-	border: 1px solid lightgray;
-	border-radius: 5px;
-	width: 94%;
-	margin: 15px auto;
-	padding: 20px 15px 20px 15px;
-	background: rgb(248,249,250);
-	font-weight: 500;
-}
 
-.notice_list_wrapper2:hover {
-	background: rgb(238,238,238);
-	cursor: pointer;
-}
-
-.important_notice_alert {
+.question_answered {
 	color: white;
-	font-size: 8pt;
-	border-radius: 20%;
+	width: 60px;
+	height: 23px;
+	font-size: 9pt;
+	border-radius: 10px;
 	display: inline-block;
 	background: midnightblue;
-	margin-right: 3px;
+	margin-left: 10px;
 	padding: 2px 3px 2px 3px;
+	text-indent: 5px;
 }
 
-.notice_title_wrapper {
-	display: inline-block;
-	vertical-align: middle;
-}
 
-.notice_regdate_wrapper {
-	display: inline-block;
-	vertical-align: middle;
-	float: right;
-}
+
+
+
 
 .paging_wrapper1 {
 	text-align: center;
@@ -114,6 +97,31 @@
 
 
 
+
+
+
+.question-table-title {
+	height: 52px;
+	background-color: rgb(245,245,245);
+}
+
+
+.question-row {
+	height: 45px;
+}
+
+.question-row:hover {
+	background-color: rgb(238,238,238);
+}
+
+
+.question-row-title {
+	color: #212529;
+}
+
+.question-row-title:hover {
+	color: #007bff;
+}
 
 
 
@@ -146,16 +154,17 @@
     
     <div class="notice_wrapper1">
     	<div class="notice_header_wrapper">
+    	
     		<div class="notice_header_left">
 	    		<div class="notice_header">
-		    		<h2>Notice</h2>
+		    		<h2>Q & A</h2>
 		    	</div>
 		    	<div class="notice_subheader">
-		    		Fundee의 다양한 소식을 알려드립니다.
+		    		문의사항 및 불편한 점이 있다면 자유롭게 알려주세요.
 		    	</div>
     		</div>
    			<div class="notice_write_button"
-   				onclick="javascript:location.href='notice_write.do?pageNum=${currentPage}';">
+   				onclick="javascript:location.href='question_write.do?pageNum=${currentPage}';">
    				글쓰기
     		</div>
     		
@@ -164,30 +173,43 @@
     	
     	<div class="notice_list_wrapper1">
     	
-    		<c:forEach var="dto" items="${importantLists }">
-    			<div class="notice_list_wrapper2" 
-    				onclick="javascript:location.href='notice_detail.do?notice_num=${dto.notice_num}&pageNum=${currentPage }';">
-    				<div class="important_notice_alert">공지</div>
-    				<div class="notice_title_wrapper">
-    					${dto.title }
-    				</div>
-    				<div class="notice_regdate_wrapper">
-    					${dto.reg_date }
-    				</div>
-    			</div>
-    		</c:forEach>
+    		<table style="width: 94%; margin: 0 auto;">
+    		
+    			<tr><td colspan="4" height="4" style="background-color: lightgray;"></tr>
+    		
+    			<tr class="question-table-title">
+    				<td style="width: 5%; text-align: center;">No</td>
+    				<td style="text-align: center;">제목</td>
+    				<td style="width: 13%; text-align: center;">작성자</td>
+    				<td style="width: 13%; text-align: center;">작성일</td>
+    			</tr>
+    			
+    			
+    			<c:forEach var="dto" items="${lists }">
+    			
+    			<tr><td colspan="4" height="1" style="background-color: #eeeeee;"></tr>
+    			
+    			<tr class="question-row">
+    				<td style="text-align: center;">${dto.board_num}</td>
+    				<td style="text-indent: 30px;">
+    					<c:if test="${dto.secret==1 }">🔒 &nbsp;</c:if>
+    					<a href="qna_detail.do?question_num=${dto.question_num }&pageNum=${currentPage }" class="question-row-title">
+    						${dto.title }
+    					</a>
+    					<c:if test="${dto.answered }">
+    						<div class="question_answered">답변완료</div>
+    					</c:if>
+    				</td>
+    				<td style="text-align: center;">${dto.name }</td>
+    				<td style="text-align: center;">${dto.reg_date }</td>
+    			</tr>
+    			</c:forEach>
+    		
+    			<tr><td colspan="4" height="1" style="background-color: #eeeeee;"></tr>
+    		
+    		</table>
     	
-    		<c:forEach var="dto" items="${allLists }">
-    			<div class="notice_list_wrapper2"
-    				onclick="javascript:location.href='notice_detail.do?notice_num=${dto.notice_num}&pageNum=${currentPage }';">
-    				<div class="notice_title_wrapper">
-    					${dto.title }
-    				</div>
-    				<div class="notice_regdate_wrapper">
-    					${dto.reg_date }
-    				</div>
-    			</div>
-    		</c:forEach>
+    	
     	
     	
     		

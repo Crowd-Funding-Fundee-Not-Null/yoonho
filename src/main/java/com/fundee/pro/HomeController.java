@@ -143,7 +143,11 @@ public class HomeController {
 		for (int i=0; i<cookies.length; i++) {
 			String[] tempArr = cookies[i].substring(1, cookies[i].length()-1).split("_");
 			cookies[i] = tempArr[tempArr.length-1];
-			lists.add(postsDAO.getReadData(Integer.parseInt(cookies[i])));
+			
+			PostsDTO postsDTO = postsDAO.getReadData(Integer.parseInt(cookies[i]));
+			postsDTO.setImage_file(postsDTO.getImage_file().substring(19));
+			
+			lists.add(postsDTO);
 		}
 		
 		

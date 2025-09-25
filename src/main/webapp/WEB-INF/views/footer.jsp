@@ -132,7 +132,7 @@
      		<a class="footer-menu-a" href="index.do">홈으로</a> &nbsp;| &nbsp;
      		<a class="footer-menu-a" href="notice.do">공지사항</a> &nbsp;| &nbsp; 
      		<a class="footer-menu-a" href="#">회사소개</a>&nbsp; |&nbsp; 
-     		<a class="footer-menu-a" href="#">고객센터</a>
+     		<a class="footer-menu-a" href="qna.do">고객센터</a>
      	</div>
      	
      	<div>

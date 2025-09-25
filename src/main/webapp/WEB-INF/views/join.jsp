@@ -54,6 +54,11 @@
     }
     #joinPage .links { text-align:center; margin-top:18px; }
     #joinPage .links a { margin:0 8px; text-decoration:none; }
+    
+    input::placeholder {
+    	color: gray !important;
+    }
+    
   </style>
   
   
