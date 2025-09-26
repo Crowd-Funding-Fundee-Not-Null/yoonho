@@ -11,6 +11,7 @@ PUBLIC "-/mybatis.org//DTD Mapper 3.0//EN"
 
 <!-- QUESTION 부분 -->
 
+<!-- 현재 페이징에 해당하는 question들을 불러오기 -->
 <select id="getAllQuestion" parameterType="map" resultType="com.fundee.dto.QuestionDTO">
 	select * from (
 		select rownum rnum, data.* from (
@@ -22,27 +23,32 @@ PUBLIC "-/mybatis.org//DTD Mapper 3.0//EN"
 </select>
 
 
+<!-- 모든 question 데이터의 개수 -->
 <select id="getQuestionDataCount" resultType="int">
 	select nvl(count(*),0) from question
 </select>
 
 
+<!-- question의 상세 정보 -->
 <select id="getQuestionDetail" parameterType="int" resultType="com.fundee.dto.QuestionDTO">
 	select * from question where question_num=#{question_num}
 </select>
 
 
+<!-- question 테이블의 question_num의 최댓값 -->
 <select id="getQuestionMaxNum" resultType="int">
 	select nvl(max(question_num),0) from question
 </select>
 
 
+<!-- question 등록 -->
 <insert id="insertQuestion" parameterType="com.fundee.dto.QuestionDTO">
 	insert into question (question_num,id,title,content,reg_date,secret)
 	values (#{question_num},#{id},#{title},#{content},sysdate,#{secret})
 </insert>
 
 
+<!-- question 삭제 -->
 <delete id="deleteQuestion" parameterType="int">
 	delete question where question_num=#{question_num}
 </delete>
@@ -54,34 +60,37 @@ PUBLIC "-/mybatis.org//DTD Mapper 3.0//EN"
 
 <!-- ANSWER 부분 -->
 
-
+<!-- answer 테이블의 answer_num의 최댓값 -->
 <select id="getAnswerMaxNum" resultType="int">
 	select nvl(max(answer_num),0) from answer
 </select>
 
-
-<select id="getAnswered" parameterType="int" resultType="int">
+<!-- 해당 question에 등록된 answer의 개수 -->
+<select id="getAnswerCountOfQuestion" parameterType="int" resultType="int">
 	select nvl(count(*),0) from answer where question_num=#{question_num}
 </select>
 
 
-
+<!-- 해당 question에 등록된 answer의 상세정보 -->
 <select id="getAnswer" parameterType="int" resultType="com.fundee.dto.AnswerDTO">
 	select * from answer where question_num=#{question_num}
 </select>
 
 
+<!-- answer 등록 -->
 <insert id="insertAnswer" parameterType="com.fundee.dto.AnswerDTO">
 	insert into answer (answer_num,id,question_num,content,reg_date)
 	values (#{answer_num},#{id},#{question_num},#{content},sysdate)
 </insert>
 
 
+<!-- answer 삭제 -->
 <delete id="deleteAnswer" parameterType="int">
 	delete answer where answer_num=#{answer_num}
 </delete>
 
 
+<!-- 해당 question에 등록된 모든 answser들을 삭제 -->
 <delete id="deleteAnswerOfQuestion" parameterType="int">
 	delete answer where question_num=#{question_num}
 </delete>

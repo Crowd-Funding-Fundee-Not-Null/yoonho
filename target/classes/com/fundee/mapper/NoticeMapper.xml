@@ -8,7 +8,7 @@ PUBLIC "-/mybatis.org//DTD Mapper 3.0//EN"
 
 
 
-
+<!-- 현재 페이징에 맞는 공지사항 데이터들을 가져오기 -->
 <select id="getAllNotice" parameterType="map" resultType="com.fundee.dto.NoticeDTO">
 	select * from (
 		select rownum rnum, data.* from (
@@ -20,6 +20,7 @@ PUBLIC "-/mybatis.org//DTD Mapper 3.0//EN"
 </select>
 
 
+<!-- 모든 중요 공지사항을 가져오기 -->
 <select id="getImportantNotice" resultType="com.fundee.dto.NoticeDTO">
 	select * from notice where importance=1 order by notice_num desc
 </select>

@@ -7,17 +7,19 @@ PUBLIC "-/mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.fundee.mapper.AdminMapper">
 
 
-
+<!-- member 테이블에서 모든 회원정보 가져오기 -->
 <select id="getAllMember" resultType="com.fundee.dto.LoginDTO">
 	select * from member
 </select>
 
 
+<!-- posts 테이블에서 모든 posts_num 가져오기 -->
 <select id="getPostsNums" resultType="int">
 	select posts_num from posts
 </select>
 
 
+<!-- parameter로 받은 List 에 담겨있는 값을 id로 하는 데이터들을 posts 테이블에서 가져오기 -->
 <select id="get4randomPosts" parameterType="java.util.List" resultType="com.fundee.dto.PostsDTO">
 
     select * from posts where posts_num in

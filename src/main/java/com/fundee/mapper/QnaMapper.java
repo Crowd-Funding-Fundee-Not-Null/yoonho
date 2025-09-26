@@ -31,7 +31,7 @@ public interface QnaMapper {
 	//ANSWER ºÎºÐ
 	public int getAnswerMaxNum();
 	
-	public int getAnswered(int question_num);
+	public int getAnswerCountOfQuestion(int question_num);
 	
 	public AnswerDTO getAnswer(int question_num);
 	

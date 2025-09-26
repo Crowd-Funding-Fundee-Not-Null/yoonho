@@ -55,8 +55,8 @@ public class QnaDAO {
 		return qnaMapper.getAnswerMaxNum();
 	}
 	
-	public int getAnswered(int question_num) throws Exception {
-		return qnaMapper.getAnswered(question_num);
+	public int getAnswerCountOfQuestion(int question_num) throws Exception {
+		return qnaMapper.getAnswerCountOfQuestion(question_num);
 	}
 	
 	public AnswerDTO getAnswer(int question_num) throws Exception {

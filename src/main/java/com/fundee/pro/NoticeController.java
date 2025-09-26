@@ -1,21 +1,13 @@
 package com.fundee.pro;
 
-import java.text.DateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
-import javax.inject.Inject;
-import javax.management.MXBean;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -23,13 +15,10 @@ import com.fundee.dao.LoginDAO;
 import com.fundee.dao.NoticeDAO;
 import com.fundee.dao.QnaDAO;
 import com.fundee.dto.AnswerDTO;
-import com.fundee.dto.LoginDTO;
 import com.fundee.dto.NoticeDTO;
 import com.fundee.dto.QuestionDTO;
-import com.fundee.util.AlertUtil;
 import com.fundee.util.MyUtil;
 
-import lombok.RequiredArgsConstructor;
 
 @Controller
 public class NoticeController {
@@ -47,6 +36,9 @@ public class NoticeController {
 	QnaDAO qnaDAO;
 	
 	
+	//==========NOTICE 부분===========
+	
+	//공지사항 메인 페이지
 	@RequestMapping(value = "notice.do", method = RequestMethod.GET)
 	public String notice(HttpServletRequest req, HttpServletResponse resp) throws Exception {
 		
@@ -65,7 +57,7 @@ public class NoticeController {
 		
 		int dataCount = noticeDAO.getDataCount();
 		
-		int numPerPage = 6-importantLists.size();
+		int numPerPage = 10-importantLists.size();
 		int totalPage = myUtil.getPagecount(numPerPage, dataCount);
 		int numPerBlock = 5;
 		
@@ -93,11 +85,14 @@ public class NoticeController {
 		req.setAttribute("importantLists", importantLists);
 		req.setAttribute("allLists", allLists);
 		
+		String active = "notice";
+		req.setAttribute("active", active);
 		
 		return "notice";
 	}
 	
 	
+	//공지사항 상세 페이지
 	@RequestMapping(value = "notice_detail.do", method = RequestMethod.GET)
 	public String notice_detail(HttpServletRequest req, HttpServletResponse resp) throws Exception {
 	
@@ -113,8 +108,10 @@ public class NoticeController {
 		
 		
 		HttpSession session = req.getSession();
-		int role = 0;
 		
+		
+		//관리자인지 확인
+		int role = 0;
 		String loginId = (String)session.getAttribute("loginId");
 		
 		if (loginId!=null && !loginId.equals("")) {
@@ -127,11 +124,14 @@ public class NoticeController {
 		req.setAttribute("notice_num", notice_num);
 		req.setAttribute("pageNum", pageNum);
 		
+		String active = "notice";
+		req.setAttribute("active", active);
+		
 		return "notice_detail";
 	}
 	
 	
-	
+	//공지사항 작성 페이지
 	@RequestMapping(value = "notice_write.do", method = RequestMethod.GET)
 	public String notice_write(HttpServletRequest req, HttpServletResponse resp) throws Exception {
 	
@@ -139,11 +139,14 @@ public class NoticeController {
 		
 		req.setAttribute("pageNum", pageNum);
 		
+		String active = "notice";
+		req.setAttribute("active", active);
+		
 		return "notice_write";
 	}
 	
 	
-	
+	//공지사항 작성 후 등록
 	@RequestMapping(value = "notice_write.do", method = RequestMethod.POST)
 	public String notice_write(NoticeDTO dto, HttpServletRequest req, HttpServletResponse resp) throws Exception {
 	
@@ -164,7 +167,7 @@ public class NoticeController {
 	}
 	
 	
-	
+	// 공지사항 삭제
 	@RequestMapping(value = "notice_delete.do", method = RequestMethod.GET)
 	public String notice_delete(HttpServletRequest req, HttpServletResponse resp) throws Exception {
 	
@@ -180,8 +183,13 @@ public class NoticeController {
 	
 	
 	
-	//QNA 부분
 	
+	
+	//==========QNA 부분===========
+	
+	
+	
+	// QNA 메인 페이지
 	@RequestMapping(value = "qna.do", method = RequestMethod.GET)
 	public String qna(HttpServletRequest req, HttpServletResponse resp) throws Exception {
 		
@@ -219,7 +227,7 @@ public class NoticeController {
 			dto.setName(qnaDAO.getMemberDetail(dto.getId()).getNickname());
 			dto.setReg_date(dto.getReg_date().substring(0,10));
 			dto.setBoard_num(dataCount-(currentPage-1)*numPerPage-count);
-			dto.setAnswered(qnaDAO.getAnswered(dto.getQuestion_num())==0?false:true);
+			dto.setAnswered(qnaDAO.getAnswerCountOfQuestion(dto.getQuestion_num())==0?false:true);
 			count++;
 		}
 		
@@ -233,6 +241,8 @@ public class NoticeController {
 		
 		req.setAttribute("lists", questionLists);
 		
+		String active = "qna";
+		req.setAttribute("active", active);
 		
 		return "qna";
 	}
@@ -253,7 +263,7 @@ public class NoticeController {
 		questionDTO.setContent(questionDTO.getContent().replaceAll("\n", "<br/>"));
 		
 		
-		if (qnaDAO.getAnswered(questionDTO.getQuestion_num())>0) {
+		if (qnaDAO.getAnswerCountOfQuestion(questionDTO.getQuestion_num())>0) {
 			questionDTO.setAnswered(true);
 			AnswerDTO answerDTO = qnaDAO.getAnswer(question_num);
 			answerDTO.setContent(answerDTO.getContent().replaceAll("\n", "<br/>"));
@@ -262,7 +272,7 @@ public class NoticeController {
 			questionDTO.setAnswered(false);
 		}
 		
-		questionDTO.setAnswered(qnaDAO.getAnswered(questionDTO.getQuestion_num())==0?false:true);
+		questionDTO.setAnswered(qnaDAO.getAnswerCountOfQuestion(questionDTO.getQuestion_num())==0?false:true);
 		
 		int role = 0;
 		int isAuthorized = 0;
@@ -284,6 +294,9 @@ public class NoticeController {
 		req.setAttribute("question_num", question_num);
 		req.setAttribute("pageNum", pageNum);
 		
+		String active = "qna";
+		req.setAttribute("active", active);
+		
 		return "qna_detail";
 	}
 	
@@ -296,7 +309,7 @@ public class NoticeController {
 		String pageNum = req.getParameter("pageNum");
 		
 		
-		if (qnaDAO.getAnswered(question_num)>0) {
+		if (qnaDAO.getAnswerCountOfQuestion(question_num)>0) {
 			qnaDAO.deleteAnswerOfQuestion(question_num);
 		}
 		
@@ -315,6 +328,9 @@ public class NoticeController {
 		String pageNum = req.getParameter("pageNum");
 		
 		req.setAttribute("pageNum", pageNum);
+		
+		String active = "qna";
+		req.setAttribute("active", active);
 		
 		return "question_write";
 	}
@@ -355,6 +371,9 @@ public class NoticeController {
 		
 		req.setAttribute("dto", dto);
 		req.setAttribute("pageNum", pageNum);
+		
+		String active = "qna";
+		req.setAttribute("active", active);
 		
 		return "answer_write";
 	}

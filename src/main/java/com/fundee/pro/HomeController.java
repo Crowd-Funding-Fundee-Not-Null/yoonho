@@ -38,44 +38,19 @@ public class HomeController {
 	@Autowired
 	AdminDAO adminDAO;
 	
+	
+	//메인화면 띄우기
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(HttpServletRequest req, HttpServletResponse resp) throws Exception {
 		
-		int amount = 4;
-		
-		List<Integer> randomNumList = new ArrayList<Integer>();
-		List<Integer> numList = adminDAO.getPostsNums();
-		
-		int size = numList.size();
-		
-		if (size==0) {
-			return "index";
-		}
-		
-		
-		for (int i=0; i<size; i++) {
-			int randomIndex = (int)(Math.random()*(size-i));
-			int value = numList.get(randomIndex);
-			numList.remove(randomIndex);
-			numList.add(value);
-		}
-		
-		for (int i=0; i<amount; i++) {
-			if (i==size) break;
-			randomNumList.add(numList.get(i));
-		}
-
-		List<PostsDTO> lists = adminDAO.get4randomPosts(randomNumList);
-		
-		Collections.shuffle(lists);
-		
-		
-		req.setAttribute("lists", lists);
+		String active = "home";
+		req.setAttribute("active", active);
 		
 		return "index";
 	}
 	
 	
+	//랜덤으로 몇 개의 펀딩상품 데이터를 가져와서 메인화면에 전달
 	@ResponseBody
 	@RequestMapping(value = "getShuffledLists", method = RequestMethod.GET)
 	public List<PostsDTO> getShuffledLists() throws Exception {
@@ -109,6 +84,7 @@ public class HomeController {
 	}
 	
 	
+	//찜 목록 페이지
 	@RequestMapping(value = "wishlist.do", method = RequestMethod.GET)
 	public String getWishlist(HttpServletRequest req) throws Exception {
 		
@@ -129,7 +105,7 @@ public class HomeController {
 			return "wishlist";
 		}
 		
-		
+		//쿠키에서 가져온 값을 가공하여 상품들을 읽어온 뒤 찜 목록에 띄울 list를 채움
 		cookieStr = cookieStr.replaceAll("wishlist=", "");
 		cookieStr = cookieStr.substring(1,cookieStr.length()-1);
 		
@@ -193,14 +169,6 @@ public class HomeController {
 	}
 	
 	
-//	@RequestMapping(value = "alert", method = RequestMethod.GET)
-//	public String alert(HttpServletRequest req, String msg, String url) {
-//		
-//		req.setAttribute("msg", msg);
-//		req.setAttribute("url", url);
-//		
-//		return "alert";
-//	}
 	
 	
 	

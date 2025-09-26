@@ -135,7 +135,7 @@
 
 .notice_write_button_wrapper {
 	margin: 0 auto;
-	width: 220px;
+	width: 240px;
 }
 
 
